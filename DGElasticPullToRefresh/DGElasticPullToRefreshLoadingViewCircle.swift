@@ -72,6 +72,16 @@ open class DGElasticPullToRefreshLoadingViewCircle: DGElasticPullToRefreshLoadin
         shapeLayer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         layer.addSublayer(shapeLayer)
     }
+    
+    lazy var progressLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = tintColor
+        label.font = UIFont.systemFont(ofSize: 10)
+        label.textAlignment = .center
+        self.addSubview(label)
+        
+        return label
+    }()
 
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -91,6 +101,11 @@ open class DGElasticPullToRefreshLoadingViewCircle: DGElasticPullToRefreshLoadin
         } else {
             shapeLayer.transform = identityTransform
         }
+        var _progress = progress
+        if (progress > 1) {
+            _progress = 1
+        }
+        progressLabel.text = "\(Int(_progress * 100))%"
     }
     
     override open func startAnimating() {
@@ -105,6 +120,9 @@ open class DGElasticPullToRefreshLoadingViewCircle: DGElasticPullToRefreshLoadin
         rotationAnimation.isRemovedOnCompletion = false
         rotationAnimation.fillMode = CAMediaTimingFillMode.forwards
         shapeLayer.add(rotationAnimation, forKey: kRotationAnimation)
+        
+        progressLabel.text = ""
+
     }
     
     override open func stopLoading() {
@@ -133,6 +151,8 @@ open class DGElasticPullToRefreshLoadingViewCircle: DGElasticPullToRefreshLoadin
         
         let inset = shapeLayer.lineWidth / 2.0
         shapeLayer.path = UIBezierPath(ovalIn: shapeLayer.bounds.insetBy(dx: inset, dy: inset)).cgPath
+        
+        progressLabel.frame = bounds
     }
     
 }
